@@ -1,0 +1,133 @@
+// Lib: pegjs
+//     Installed path: npm list -g
+//     Modify on file node_modules\pegjs\lib\compiler\passes\generate-js.js
+//         add:
+//             'const u = require ("./pcpp");',
+//         before:
+//             '"use strict";',
+//         (line 1282 aprox)
+//
+// References: 
+//   Parsing in python: https://tomassetti.me/parsing-in-python/
+//   VScode lint extention: https://tomassetti.me/quick-domain-specific-languages-in-python-with-textx/
+
+start
+    = file
+
+    file
+        = (_n* effects* _n* class _n* cpp* _n*)+ {u.close_file ();}
+
+        effects
+            = "//" _? fxs:effect+ n {u.add_effects_on_next_element (fxs);}
+
+            effect
+                = "[" fx:effect_name "]" _? {return fx;}
+                / non_effect {}
+
+                effect_name
+                    = fx:([A-Z][A-Z0-9-]*) {return u.flat (fx).join("");}
+
+                non_effect "non_effect"
+                    = [^\n\r]+ {}
+
+        class "Class"
+            = class_id _n* "{" (_n* class_content)* _n* "}" _n* ";" {u.close_class ();}
+
+            class_id "class_id"
+                = "class" _n id:id {u.open_class (id);}
+
+            class_content "class content"
+                = access:access {u.set_access (access);}
+                / member:member {}
+
+                access "Access specifier"
+                    = access:"public"    _n* ":"  {return access;}
+                    / access:"protected" _n* ":"  {return access;}
+                    / access:"private"   _n* ":"  {return access;}
+
+                member "Class member"
+                    = m:member_decl  {}
+                    / m:member_def   {}
+
+                member_decl "Class member declaration"
+                    = m:ctor declaration        {u.add_ctor (m);}
+                    / m:dtor declaration        {u.add_dtor (m);}
+                    / m:method declaration      {u.add_method (m);}
+                    / m:op_overload declaration {u.add_op_overload (m);}
+                    / m:variable declaration    {u.add_variable (m);}
+
+                member_def "Class member definition"
+                    = m:ctor definition        {u.add_ctor (m);}
+                    / m:dtor definition        {u.add_dtor (m);}
+                    / m:method definition      {u.add_method (m);}
+                    / m:op_overload definition {u.add_op_overload (m);}
+                    / m:variable definition    {u.add_variable (m);}
+
+ctor "Class Constructor"
+    = id _n* "(" _n* args:args? _n* ")" {ctor = {"effects":[], "args":args??[], "definition":[]}; debug (`Class Constructor: ${JSON.stringify (ctor)}`); return ctor;}
+
+dtor "Class Destructor"
+    = "~" id _n* "(" _n* args:args? _n* ")" {dtor = {"effects":[], "args":args??[], "definition":[]}; debug (`Class Destructor: ${JSON.stringify (dtor)}`); return dtor;}
+
+method "Class Method"
+    = d:datatype _n* id:id _n* "(" _n* args:args? _n* ")" {m = {"effects":[], "return":d, "id":id, "args":args??[], "definition":[]}; debug (`Class Method: ${JSON.stringify (m)}`); return m;}
+
+op_overload "Class Operator Overload"
+    = d:datatype _n* "operator" op:[=] _n* "(" _n* args:args? _n* ")" {ov = {"effects":[], "return":d, "operator":op, "args":args??[], "definition":[]}; debug (`Class Operator Overload: ${JSON.stringify (ov)}`); return ov;}
+
+variable "Variable"
+    = d:datatype _n* id:id {v = {"effects":[], "datatype":d, "id":id, "definition":[]}; debug (`Variable: ${JSON.stringify (v)}`); return v;}
+
+declaration "Declaration"
+    = _n* ";" {trace (`Declaration`);}
+
+definition "Definition"
+    = _n* ";" {trace (`Definition`);}
+
+args "Arguments"
+    = arg1:arg args2_to_n:args2_to_n* {args = u.flat ([arg1, args2_to_n]); trace (`Arguments: ${JSON.stringify (args)}`); return args;}
+
+    args2_to_n "Arguments 2 to n"
+        = _n* "," _n* arg:arg {trace (`Arguments 2 to n: ${JSON.stringify (arg)}`); return arg;}
+
+    arg "Argument"
+        = _n* t:datatype _n* id:id? {arg = {... t, "id":id}; trace (`Argument: ${JSON.stringify (arg)}`); return arg;}
+
+datatype "Data Type"
+    = q:qualifiers_? d:id p:postfix* {d = {"qualifiers":q??[], "datatype":d, "postfixes":p}; trace (`Data Type: ${JSON.stringify (d)}`); return d;}
+
+    postfix "postfix"
+        = _n* p:[&*] q:qualifiers? _n* {p = {"postfix":p, "qualifiers":q??[]}; trace (`postfix: ${JSON.stringify (p)}`); return p;}
+
+    qualifiers_ "Qualifiers"
+        = qs:qualifiers _n+ {return qs;}
+
+    qualifiers "Qualifiers"
+        = q1:"const" _n+ q2:"volatile" {qs = [q1, q2]; trace (`Qualifiers: ${qs}`); return qs;}
+        / q1:"volatile" _n+ q2:"const" {qs = [q1, q2]; trace (`Qualifiers: ${qs}`); return qs;}
+        / q:"const"                    {qs = [q];      trace (`Qualifiers: ${qs}`); return qs;}
+        / q:"volatile"                 {qs = [q];      trace (`Qualifiers: ${qs}`); return qs;}
+
+    special_qualifier "Special Qualifier"
+        = sq:"static" _n+  {trace (`Special Qualifier: ${sq}`); return sq;}
+        / sq:"mutable" _n+ {trace (`Special Qualifier: ${sq}`); return sq;}
+
+cpp "cpp"
+    = m:[^"//"]+ {trace (m);}
+
+id "id"
+    = id:([A-Za-z_][A-Za-z_0-9]*) {id = u.flat (id).join(""); trace (`id: ${id}`); return id;}
+
+_n "separation"
+    = m:_  {return m;}
+    / m:n  {return m;}
+
+_ "space"
+    = m:[ \t]+ {trace (m.length + " space (s)"); return " ";}
+
+n "new line"
+    = m:[\n\r]+ {
+        m = u.flat (m).join(""); 
+        let num = (m.match(/\n/g) || []).length;
+        trace (num + " new line (s)");
+        return "\n";}

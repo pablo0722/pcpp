@@ -1,0 +1,199 @@
+{
+    "type": "file",
+    "project": "Test_Project",
+    "path": "C:\\Users\\pablo\\Documents\\google_drive\\Escritorios\\Famar_W10\\Programacion\\PC\\Cpp\\Proyects\\otros\\design_patterns\\cpp\\pcpp\\tests\\handle_body",
+    "filename": "LHandle_Body_rep",
+    "format": "header",
+    "in_extention": ".ph",
+    "out_extention": ".h",
+    "classes": [
+        {
+            "effects": [],
+            "type": "class",
+            "id": "String_Rep",
+            "public": {
+                "effects": [],
+                "ctors": [
+                    {
+                        "effects": [],
+                        "args": [],
+                        "definition": []
+                    },
+                    {
+                        "effects": [],
+                        "args": [
+                            {
+                                "qualifiers": [
+                                    "const"
+                                ],
+                                "datatype": "String_Rep",
+                                "postfixes": [
+                                    {
+                                        "postfix": "&",
+                                        "qualifiers": []
+                                    }
+                                ],
+                                "id": "s"
+                            }
+                        ],
+                        "definition": []
+                    },
+                    {
+                        "effects": [],
+                        "args": [
+                            {
+                                "qualifiers": [
+                                    "const"
+                                ],
+                                "datatype": "char",
+                                "postfixes": [
+                                    {
+                                        "postfix": "*",
+                                        "qualifiers": []
+                                    }
+                                ],
+                                "id": "s"
+                            }
+                        ],
+                        "definition": []
+                    }
+                ],
+                "dtors": [
+                    {
+                        "effects": [],
+                        "args": [],
+                        "definition": []
+                    }
+                ],
+                "methods": [
+                    {
+                        "effects": [],
+                        "return": {
+                            "qualifiers": [
+                                "const"
+                            ],
+                            "datatype": "char",
+                            "postfixes": [
+                                {
+                                    "postfix": "*",
+                                    "qualifiers": []
+                                }
+                            ]
+                        },
+                        "id": "get",
+                        "args": [],
+                        "definition": []
+                    },
+                    {
+                        "effects": [],
+                        "return": {
+                            "qualifiers": [],
+                            "datatype": "void",
+                            "postfixes": []
+                        },
+                        "id": "set",
+                        "args": [
+                            {
+                                "qualifiers": [
+                                    "const"
+                                ],
+                                "datatype": "char",
+                                "postfixes": [
+                                    {
+                                        "postfix": "*",
+                                        "qualifiers": []
+                                    }
+                                ],
+                                "id": "s"
+                            }
+                        ],
+                        "definition": []
+                    }
+                ],
+                "op_overloads": [
+                    {
+                        "effects": [],
+                        "return": {
+                            "qualifiers": [],
+                            "datatype": "String_Rep",
+                            "postfixes": [
+                                {
+                                    "postfix": "&",
+                                    "qualifiers": []
+                                }
+                            ]
+                        },
+                        "operator": "=",
+                        "args": [
+                            {
+                                "qualifiers": [
+                                    "const"
+                                ],
+                                "datatype": "char",
+                                "postfixes": [
+                                    {
+                                        "postfix": "*",
+                                        "qualifiers": []
+                                    }
+                                ],
+                                "id": "s"
+                            }
+                        ],
+                        "definition": []
+                    }
+                ],
+                "variables": []
+            },
+            "protected": {
+                "effects": [],
+                "ctors": [],
+                "dtors": [],
+                "methods": [],
+                "op_overloads": [],
+                "variables": []
+            },
+            "private": {
+                "effects": [],
+                "ctors": [],
+                "dtors": [],
+                "methods": [],
+                "op_overloads": [],
+                "variables": [
+                    {
+                        "effects": [],
+                        "datatype": {
+                            "qualifiers": [],
+                            "datatype": "int",
+                            "postfixes": []
+                        },
+                        "id": "a",
+                        "definition": []
+                    },
+                    {
+                        "effects": [],
+                        "datatype": {
+                            "qualifiers": [],
+                            "datatype": "String_Rep",
+                            "postfixes": [
+                                {
+                                    "postfix": "*",
+                                    "qualifiers": []
+                                }
+                            ]
+                        },
+                        "id": "other_string",
+                        "definition": []
+                    }
+                ]
+            },
+            "classes": [],
+            "comment_pre": null,
+            "comment_open": null,
+            "comment_start": null,
+            "comment_end": null,
+            "comment_close": null,
+            "comment_post": null
+        }
+    ],
+    "define": "TEST_PROJECT_LHANDLE_BODY_REP_H_"
+}
